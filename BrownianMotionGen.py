@@ -14,6 +14,7 @@ import tensorflow as tf
 import time
 import copy
 import ipdb
+import pathlib
 
 
         
@@ -50,9 +51,11 @@ def transform_event_yaxis_base_vectorized(event_data_array, proc_std, spline_int
 
 
 class brow_aug_GPU_opt():
-    def __init__(self,proc_std=0.5,event_len_in_array=True):
+    def __init__(self,proc_std=0.5,event_len_in_array=False):
         self.std=proc_std;
-        self.browAug=tf.load_op_library('/home/jkipen/NanoporeDNASensing/Common/TFBrowAug/browAug.so')
+        par_folder=str(pathlib.Path(__file__).parent.resolve());
+        self.browAug=tf.load_op_library(par_folder+'/TFBrowAug/browAug.so')
+        ipdb.set_trace();
         self.event_len_in_array=event_len_in_array;
     def aug(self,data_in,noise=None):
         if noise is None:
@@ -137,7 +140,7 @@ def test_GPU_brownian():
     print("["+ str(data_out[-1,:3]) + "... "+str(data_out[-1,-2:]) +"]")
     
 def test_GPU_brownian_validation(w_GPU=False):
-    len_out=500;n_ev=3; 
+    len_out=700;n_ev=3; 
     evs=np.zeros((n_ev,len_out)); std=1;
     evs[:]=np.nan;
     evs[0,:350]=np.cos(0.1*np.arange(350)); #Try one normal input
